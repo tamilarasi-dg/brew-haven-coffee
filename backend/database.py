@@ -1,13 +1,16 @@
-
+import os
 import mysql.connector
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_connection():
     connection = mysql.connector.connect(
-        host="localhost",
-        port=3307,
-        user="root",
-        password="Mysql@123",
-        database="brew_haven"
+        host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", "3307")),
+        user=os.getenv("DB_USER", "root"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME", "brew_haven")
     )
 
     return connection
