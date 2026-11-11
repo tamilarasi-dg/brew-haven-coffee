@@ -1,14 +1,25 @@
-
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import get_connection
 
-app = FastAPI()
+app = FastAPI(title="Brew Haven API")
+
+# Configure CORS
+# In production, ALLOWED_ORIGINS can be set to "https://your-frontend.vercel.app,http://localhost:5173"
+# If not specified or '*', allows all origins so the deployed frontend can connect immediately.
+allowed_origins_raw = os.getenv("ALLOWED_ORIGINS", "*")
+if allowed_origins_raw.strip() == "*":
+    allow_origins = ["*"]
+    allow_credentials = False
+else:
+    allow_origins = [o.strip() for o in allowed_origins_raw.split(",") if o.strip()]
+    allow_credentials = True
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=allow_origins,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -38,3 +49,8 @@ def get_coffees():
     connection.close()
 
     return coffees
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

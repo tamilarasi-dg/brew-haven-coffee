@@ -14,7 +14,13 @@ function App() {
   };
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/coffees')
+    let apiUrl = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').trim();
+    if (!/^https?:\/\//i.test(apiUrl)) {
+      apiUrl = `https://${apiUrl}`;
+    }
+    apiUrl = apiUrl.replace(/\/+$/, '');
+
+    fetch(`${apiUrl}/coffees`) 
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to load coffee menu');
@@ -125,3 +131,4 @@ function App() {
 }
 
 export default App;
+
